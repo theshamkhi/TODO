@@ -12,11 +12,11 @@ typedef struct {
 
 typedef struct {
     int ID;
-    char title[MAX];
-    char description[MAX];
-    char status[10];
+    char *title;
+    char *description;
+    char *status;
     char deadline[11];
-    char creationDate[MAX];
+    char *creationDate;
     User *collaborators;
     int numCollaborators;
 } Task;
@@ -47,25 +47,28 @@ void AddPartner(Task *newT) {
 
 // Function to add a new task
 void Addnew() {
-    Task newT;
-    newT.ID = numTasks + 1;
+    Task *newT = (Task*)malloc(sizeof(Task));
+    newT->title = (char *)malloc(sizeof(char) * 30);
+    newT->description = (char *)malloc(sizeof(char) * 500);
+    newT->status = (char *)malloc(sizeof(char) * 10);
+    newT->ID = numTasks + 1;
 
     printf("--------------------------------\n");
     printf("Enter the task title:\n");
-    scanf(" %[^\n]", newT.title);
+    scanf(" %[^\n]", newT->title);
     printf("Enter the task description:\n");
-    scanf(" %[^\n]", newT.description);
-    strcpy(newT.status, "TO DO");
-    printf("Enter the task deadline (format: YYYY-MM-DD):\n");
-    scanf(" %[^\n]", newT.deadline);
+    scanf(" %[^\n]", newT->description);
+    strcpy(newT->status, "TO DO");
+    printf("Enter the task deadline (format: DD-MM-YYYY):\n");
+    scanf(" %[^\n]", newT->deadline);
 
-    AddPartner(&newT);
+    AddPartner(newT);
 
     time_t now = time(NULL);
     struct tm *local_time = localtime(&now);
-    strftime(newT.creationDate, sizeof(newT.creationDate), "%c", local_time);
+    strftime(newT->creationDate, sizeof(newT->creationDate), "%c", local_time);
 
-    tasks[numTasks++] = newT;
+    tasks[numTasks++] = *newT;
 }
 
 // Function to add more tasks
@@ -203,13 +206,13 @@ void Search() {
 
 // Function to calculate days remaining until deadline
 double DaysRemaining(const char *deadline_str) {
-    int year, month, day;
-    sscanf(deadline_str, "%d-%d-%d", &year, &month, &day);
+    int day, month, year;
+    sscanf(deadline_str, "%d-%d-%d", &day, &month, &year);
 
     struct tm deadline_tm = {0};
-    deadline_tm.tm_year = year - 1900;
-    deadline_tm.tm_mon = month - 1;
     deadline_tm.tm_mday = day;
+    deadline_tm.tm_mon = month - 1;
+    deadline_tm.tm_year = year - 1900;
     deadline_tm.tm_hour = 0;
     deadline_tm.tm_min = 0;
     deadline_tm.tm_sec = 0;
