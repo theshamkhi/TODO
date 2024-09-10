@@ -10,13 +10,14 @@ typedef struct {
     char email[MAX];
 } User;
 
+
 typedef struct {
     int ID;
-    char *title;
-    char *description;
-    char *status;
+    char title[MAX];
+    char description[MAX];
+    char status[10];
     char deadline[11];
-    char *creationDate;
+    char creationDate[MAX];
     User *collaborators;
     int numCollaborators;
 } Task;
@@ -47,28 +48,25 @@ void AddPartner(Task *newT) {
 
 // Function to add a new task
 void Addnew() {
-    Task *newT = (Task*)malloc(sizeof(Task));
-    newT->title = (char *)malloc(sizeof(char) * 30);
-    newT->description = (char *)malloc(sizeof(char) * 500);
-    newT->status = (char *)malloc(sizeof(char) * 10);
-    newT->ID = numTasks + 1;
+    Task newT;
+    newT.ID = numTasks + 1;
 
     printf("--------------------------------\n");
     printf("Enter the task title:\n");
-    scanf(" %[^\n]", newT->title);
+    scanf(" %[^\n]", newT.title);
     printf("Enter the task description:\n");
-    scanf(" %[^\n]", newT->description);
-    strcpy(newT->status, "TO DO");
+    scanf(" %[^\n]", newT.description);
+    strcpy(newT.status, "TO DO");
     printf("Enter the task deadline (format: DD-MM-YYYY):\n");
-    scanf(" %[^\n]", newT->deadline);
+    scanf(" %[^\n]", newT.deadline);
 
-    AddPartner(newT);
+    AddPartner(&newT);
 
     time_t now = time(NULL);
     struct tm *local_time = localtime(&now);
-    strftime(newT->creationDate, sizeof(newT->creationDate), "%c", local_time);
+    strftime(newT.creationDate, sizeof(newT.creationDate), "%c", local_time);
 
-    tasks[numTasks++] = *newT;
+    tasks[numTasks++] = newT;
 }
 
 // Function to add more tasks
